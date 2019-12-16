@@ -1,3 +1,5 @@
-[submodule "Sparkle/3rdparty/Sparkle"]
-	path = Sparkle/3rdparty/Sparkle
-	url = https://github.com/sparkle-project/Sparkle.git
+[submodule "SparkleSharp/3rdparty/Sparkle"]
+	path = SparkleSharp/3rdparty/Sparkle
+	url = git@github.com:oodrive/Sparkle.git
+	branch = Check-updates-from-appcast
+
