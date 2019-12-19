@@ -14,11 +14,11 @@
     <RestoreProjectStyle>PackageReference</RestoreProjectStyle>
     <PackOnBuild>true</PackOnBuild>
     <PackageId>SparkleSharp</PackageId>
-    <PackageVersion>1.0.0-alpha2</PackageVersion>
+    <PackageVersion>1.0.0-alpha3</PackageVersion>
     <Authors>oodrive</Authors>
     <Copyright>Copyright 2019</Copyright>
     <Owners>oodrive</Owners>
-    <PackageLicenseUrl>https://github.com/oodrive/SparkleSharp/blob/master/LICENSE.md</PackageLicenseUrl>
+    <PackageLicenseUrl>https://licenses.nuget.org/MIT</PackageLicenseUrl>
     <PackageProjectUrl>https://github.com/oodrive/SparkleSharp</PackageProjectUrl>
     <Title>Sparkle Sharp</Title>
     <Description>C# bindings for the Sparkle update framework for macOS applications. This package is designed for Xamarin.Mac full projects.</Description>

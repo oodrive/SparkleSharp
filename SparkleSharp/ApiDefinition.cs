@@ -285,96 +285,342 @@ namespace SparkleSharp
     [BaseType (typeof (NSObject))]
     public interface SUUpdaterDelegate
     {
-        // @optional -(BOOL)updaterMayCheckForUpdates:(SUUpdater *)updater;
-        [Export ("updaterMayCheckForUpdates:")]
+		/// <summary>
+		///  Returns whether to allow Sparkle to pop up.
+		///  For example, this may be used to prevent Sparkle from interrupting a setup assistant.
+		///
+		/// @optional -(BOOL)updaterMayCheckForUpdates:(SUUpdater *)updater;
+		/// </summary>
+		/// <param name="updater">The SUUpdater instance.</param>
+		[Export ("updaterMayCheckForUpdates:")]
         bool UpdaterMayCheckForUpdates (SUUpdater updater);
 
-        // @optional -(NSArray *)feedParametersForUpdater:(SUUpdater *)updater sendingSystemProfile:(BOOL)sendingProfile;
-        [Export ("feedParametersForUpdater:sendingSystemProfile:")]
+		/// <summary>
+		/// Returns additional parameters to append to the appcast URL's query string.
+		/// This is potentially based on whether or not Sparkle will also be sending along the system profile.
+		///
+		/// @optional -(NSArray *)feedParametersForUpdater:(SUUpdater *)updater sendingSystemProfile:(BOOL)sendingProfile;
+		/// </summary>
+		/// <param name="updater">The SUUpdater instance.</param>
+		/// <param name="sendingProfile">Whether the system profile will also be sent.</param>
+		/// <returns>An array of dictionaries with keys: "key", "value", "displayKey", "displayValue", the latter two being
+		/// specifically for display to the user.</returns>
+		[Export ("feedParametersForUpdater:sendingSystemProfile:")]
         NSObject [] FeedParametersForUpdater (SUUpdater updater, bool sendingProfile);
 
-        // @optional -(NSString *)feedURLStringForUpdater:(SUUpdater *)updater;
-        [Export ("feedURLStringForUpdater:")]
+		/// <summary>
+		/// Returns a custom appcast URL.
+		/// Override this to dynamically specify the entire URL.
+		///
+		/// An alternative may be to use SUUpdaterDelegate::feedParametersForUpdater:sendingSystemProfile:
+		/// and let the server handle what kind of feed to provide.
+		/// 
+		/// @optional -(NSString *)feedURLStringForUpdater:(SUUpdater *)updater;
+		/// </summary>
+		/// <param name="updater">The SUUpdater instance.</param>
+		[Export ("feedURLStringForUpdater:")]
         string FeedURLStringForUpdater (SUUpdater updater);
 
-        // @optional -(BOOL)updaterShouldPromptForPermissionToCheckForUpdates:(SUUpdater *)updater;
-        [Export ("updaterShouldPromptForPermissionToCheckForUpdates:")]
+		/// <summary>
+		/// Returns whether Sparkle should prompt the user about automatic update checks.
+		/// Use this to override the default behavior.
+		/// 
+		/// @optional -(BOOL)updaterShouldPromptForPermissionToCheckForUpdates:(SUUpdater *)updater;
+		/// </summary>
+		/// <param name="updater">The SUUpdater instance.</param>
+		/// <returns></returns>
+		[Export ("updaterShouldPromptForPermissionToCheckForUpdates:")]
         bool UpdaterShouldPromptForPermissionToCheckForUpdates (SUUpdater updater);
 
-        // @optional -(void)updater:(SUUpdater *)updater didFinishLoadingAppcast:(SUAppcast *)appcast;
-        [Export ("updater:didFinishLoadingAppcast:")]
-        void Updater (SUUpdater updater, SUAppcast appcast);
+		/// <summary>
+		/// Called after Sparkle has downloaded the appcast from the remote server.
+		/// Implement this if you want to do some special handling with the appcast once it finishes loading.
+		///
+		/// @optional -(void)updater:(SUUpdater *)updater didFinishLoadingAppcast:(SUAppcast *)appcast;
+		/// </summary>
+		/// <param name="updater">The SUUpdater instance.</param>
+		/// <param name="appcast"></param>
+		[Export ("updater:didFinishLoadingAppcast:")]
+        void UpdaterDidFinishLoadingAppcast(SUUpdater updater, SUAppcast appcast);
 
-        // @optional -(SUAppcastItem *)bestValidUpdateInAppcast:(SUAppcast *)appcast forUpdater:(SUUpdater *)updater;
-        [Export ("bestValidUpdateInAppcast:forUpdater:")]
+		/// <summary>
+		/// Returns the item in the appcast corresponding to the update that should be installed.
+		/// If you're using special logic or extensions in your appcast implement this to use your own logic for
+		/// finding a valid update, if any, in the given appcast.
+		///
+		/// @optional -(SUAppcastItem *)bestValidUpdateInAppcast:(SUAppcast *)appcast forUpdater:(SUUpdater *)updater;
+		/// </summary>
+		/// <param name="appcast">The appcast that was downloaded from the remote server.</param>
+		/// <param name="updater">The SUUpdater instance.</param>
+		/// <returns></returns>
+		[Export ("bestValidUpdateInAppcast:forUpdater:")]
         SUAppcastItem BestValidUpdateInAppcast (SUAppcast appcast, SUUpdater updater);
 
-        // @optional -(void)updater:(SUUpdater *)updater didFindValidUpdate:(SUAppcastItem *)item;
-        [Export ("updater:didFindValidUpdate:")]
-        void Updater (SUUpdater updater, SUAppcastItem item);
+		/// <summary>
+		/// Called when a valid update is found by the update driver.
+		///
+		/// @optional -(void)updater:(SUUpdater *)updater didFindValidUpdate:(SUAppcastItem *)item;
+		/// </summary>
+		/// <param name="updater">The SUUpdater instance.</param>
+		/// <param name="item">The appcast item corresponding to the update that is proposed to be installed.</param>
+		[Export ("updater:didFindValidUpdate:")]
+        void UpdaterDidFindValidUpdate(SUUpdater updater, SUAppcastItem item);
 
-        // @optional -(void)updaterDidNotFindUpdate:(SUUpdater *)updater;
-        [Export ("updaterDidNotFindUpdate:")]
-        void UpdaterDidNotFindUpdate (SUUpdater updater);
+		/// <summary>
+		/// Called just before the scheduled update driver prompts the user to install an update.
+		/// 
+		/// @optional - (BOOL) updaterShouldShowUpdateAlertForScheduledUpdate:(SUUpdater*) updater forItem:(SUAppcastItem*) item;
+		/// </summary>
+		/// <param name="updater">The SUUpdater instance.</param>
+		/// <param name="item"></param>
+		/// <returns>true to allow the update prompt to be shown (the default behavior), or false to suppress it.</returns>
+		[Export("updaterShouldShowUpdateAlertForScheduledUpdate:forItem:")]
+		bool UpdaterShouldShowUpdateAlertForScheduledUpdate(SUUpdater updater, SUAppcastItem item);
 
-        // @optional -(void)updater:(SUUpdater *)updater willDownloadUpdate:(SUAppcastItem *)item withRequest:(NSMutableURLRequest *)request;
-        [Export ("updater:willDownloadUpdate:withRequest:")]
-        void Updater (SUUpdater updater, SUAppcastItem item, NSMutableUrlRequest request);
+		/// <summary>
+		/// Called after the user dismisses the update alert.
+		///
+		/// @optional - (void)updater:(SUUpdater *)updater didDismissUpdateAlertPermanently:(BOOL)permanently forItem:(SUAppcastItem *)item;
+		/// </summary>
+		/// <param name="updater">The SUUpdater instance.</param>
+		/// <param name="permanently">true if the alert will not appear again for this update, false if it may reappear.</param>
+		/// <param name="item"></param>
+		[Export("updater:didDismissUpdateAlertPermanently:forItem:")]
+		void UpdaterDidDismissUpdateAlertPermanently(SUUpdater updater, bool permanently, SUAppcastItem item);
 
-        // @optional -(void)updater:(SUUpdater *)updater failedToDownloadUpdate:(SUAppcastItem *)item error:(NSError *)error;
-        [Export ("updater:failedToDownloadUpdate:error:")]
-        void Updater (SUUpdater updater, SUAppcastItem item, NSError error);
+		/// <summary>
+		/// Called when a valid update is not found
+		///
+		/// @optional -(void)updaterDidNotFindUpdate:(SUUpdater *)updater;
+		/// </summary>
+		/// <param name="updater">The SUUpdater instance.</param>
+		[Export("updaterDidNotFindUpdate:")]
+		void UpdaterDidNotFindUpdate(SUUpdater updater);
 
-        // @optional -(void)userDidCancelDownload:(SUUpdater *)updater;
-        [Export ("userDidCancelDownload:")]
+		/// <summary>
+		/// Called when the user clicks the Skip This Version button.
+		///
+		/// @optional - (void) updater:(SUUpdater*) updater userDidSkipThisVersion:(SUAppcastItem*) item;
+		/// </summary>
+		/// <param name="updater">The SUUpdater instance.</param>
+		/// <param name="item"></param>
+		[Export("updater:userDidSkipThisVersion:")]
+		void UserDidSkipThisVersion(SUUpdater updater, SUAppcastItem item);
+
+		/// <summary>
+		/// Called immediately before downloading the specified update.
+		///
+		/// @optional -(void)updater:(SUUpdater *)updater willDownloadUpdate:(SUAppcastItem *)item withRequest:(NSMutableURLRequest *)request;
+		/// </summary>
+		/// <param name="updater">The SUUpdater instance.</param>
+		/// <param name="item">The appcast item corresponding to the update that is proposed to be downloaded.</param>
+		/// <param name="request">The mutable URL request that will be used to download the update.</param>
+		[Export ("updater:willDownloadUpdate:withRequest:")]
+        void UpdaterWillDownloadUpdate(SUUpdater updater, SUAppcastItem item, NSMutableUrlRequest request);
+
+		/// <summary>
+		/// Called immediately after succesfull download of the specified update.
+		/// 
+		/// @optional - (void)updater:(SUUpdater *)updater didDownloadUpdate:(SUAppcastItem *)item;
+		/// </summary>
+		/// <param name="updater">The SUUpdater instance.</param>
+		/// <param name="item">The appcast item corresponding to the update that has been downloaded.</param>
+		[Export("updater:didDownloadUpdate:")]
+		void UpdaterDidDownloadUpdate(SUUpdater updater, SUAppcastItem item);
+
+		/// <summary>
+		/// Called after the specified update failed to download.
+		///
+		/// @optional -(void)updater:(SUUpdater *)updater failedToDownloadUpdate:(SUAppcastItem *)item error:(NSError *)error;
+		/// </summary>
+		/// <param name="updater">The SUUpdater instance.</param>
+		/// <param name="item">The appcast item corresponding to the update that failed to download.</param>
+		/// <param name="error">The error generated by the failed download.</param>
+		[Export ("updater:failedToDownloadUpdate:error:")]
+        void UpdaterFailedToDownloadUpdate(SUUpdater updater, SUAppcastItem item, NSError error);
+
+		/// <summary>
+		/// Called when the user clicks the cancel button while and update is being downloaded.
+		///
+		/// @optional -(void)userDidCancelDownload:(SUUpdater *)updater;
+		/// </summary>
+		/// <param name="updater">The SUUpdater instance.</param>
+		[Export ("userDidCancelDownload:")]
         void UserDidCancelDownload (SUUpdater updater);
 
-        // @optional -(void)updater:(SUUpdater *)updater willInstallUpdate:(SUAppcastItem *)item;
-        [Export ("updater:willInstallUpdate:")]
+		/// <summary>
+		/// Called immediately before extracting the specified downloaded update.
+		///
+		/// @optional - (void)updater:(SUUpdater *)updater willExtractUpdate:(SUAppcastItem *)item;
+		/// </summary>
+		/// <param name="updater">The SUUpdater instance.</param>
+		/// <param name="item"></param>
+		[Export("updater:willExtractUpdate:")]
+		void UpdaterWillExtractUpdate(SUUpdater updater, SUAppcastItem item);
+
+		/// <summary>
+		/// Called immediately after extracting the specified downloaded update.
+		///
+		/// @optional - (void)updater:(SUUpdater *)updater didExtractUpdate:(SUAppcastItem *)item;
+		/// </summary>
+		/// <param name="updater">The SUUpdater instance.</param>
+		/// <param name="item">The appcast item corresponding to the update that has been extracted.</param>
+		[Export("updater:didExtractUpdate:")]
+		void UpdaterDidExtractUpdate(SUUpdater updater, SUAppcastItem item);
+
+		/// <summary>
+		/// Called immediately before installing the specified update.
+		/// 
+		/// @optional -(void)updater:(SUUpdater *)updater willInstallUpdate:(SUAppcastItem *)item;
+		/// </summary>
+		/// <param name="updater">The SUUpdater instance.</param>
+		/// <param name="item">The appcast item corresponding to the update that is proposed to be installed.</param>
+		[Export ("updater:willInstallUpdate:")]
         void UpdaterWillInstallUpdate (SUUpdater updater, SUAppcastItem item);
 
-        // @optional -(BOOL)updater:(SUUpdater *)updater shouldPostponeRelaunchForUpdate:(SUAppcastItem *)item untilInvoking:(NSInvocation *)invocation;
-        [Export ("updater:shouldPostponeRelaunchForUpdate:untilInvoking:")]
+		/// <summary>
+		/// Returns whether the relaunch should be delayed in order to perform other tasks.
+		/// This is not called if the user didn't relaunch on the previous update, in that case it will immediately restart.
+		///
+		/// @optional -(BOOL)updater:(SUUpdater *)updater shouldPostponeRelaunchForUpdate:(SUAppcastItem *)item untilInvoking:(NSInvocation *)invocation;
+		/// </summary>
+		/// <param name="updater">The SUUpdater instance.</param>
+		/// <param name="item">The appcast item corresponding to the update that is proposed to be installed.</param>
+		/// <param name="invocation">The invocation that must be completed with `[invocation invoke]` before continuing
+		/// with the relaunch.</param>
+		/// <returns>true to delay the relaunch until invocation is invoked.</returns>
+		[Export ("updater:shouldPostponeRelaunchForUpdate:untilInvoking:")]
         bool UpdaterShouldPostponeRelaunchForUpdateUntil (SUUpdater updater, SUAppcastItem item, NSInvocation invocation);
 
-        // @optional -(BOOL)updaterShouldRelaunchApplication:(SUUpdater *)updater;
-        [Export ("updaterShouldRelaunchApplication:")]
+		/// <summary>
+		/// Returns whether the relaunch should be delayed in order to perform other tasks.
+		/// This is not called if the user didn't relaunch on the previous update, in that case it will immediately restart.
+		///
+		/// This method acts as a simpler alternative to SUUpdaterDelegate::updater:shouldPostponeRelaunchForUpdate:untilInvoking:
+		/// avoiding usage of NSInvocation, which is not available in Swift environments.
+		///
+		/// @optional - (BOOL)updater:(SUUpdater *)updater shouldPostponeRelaunchForUpdate:(SUAppcastItem *)item;
+		/// </summary>
+		/// <param name="updater">The SUUpdater instance.</param>
+		/// <param name="item">The appcast item corresponding to the update that is proposed to be installed.</param>
+		/// <returns>true to delay the relaunch.</returns>
+		[Export("updater:shouldPostponeRelaunchForUpdate:")]
+		bool UpdaterShouldPostponeRelaunchForUpdate(SUUpdater updater, SUAppcastItem item);
+
+		/// <summary>
+		/// Returns whether the application should be relaunched at all.
+		///
+		/// @optional -(BOOL)updaterShouldRelaunchApplication:(SUUpdater *)updater;
+		/// </summary>
+		/// <param name="updater">The SUUpdater instance.</param>
+		/// <returns></returns>
+		[Export ("updaterShouldRelaunchApplication:")]
         bool UpdaterShouldRelaunchApplication (SUUpdater updater);
 
-        // @optional -(void)updaterWillRelaunchApplication:(SUUpdater *)updater;
-        [Export ("updaterWillRelaunchApplication:")]
+		/// <summary>
+		/// Called immediately before relaunching.
+		///
+		/// @optional -(void)updaterWillRelaunchApplication:(SUUpdater *)updater;
+		/// </summary>
+		/// <param name="updater">The SUUpdater instance.</param>
+		[Export ("updaterWillRelaunchApplication:")]
         void UpdaterWillRelaunchApplication (SUUpdater updater);
 
-        // @optional -(id<SUVersionComparison>)versionComparatorForUpdater:(SUUpdater *)updater;
-        [Export ("versionComparatorForUpdater:")]
+		/// <summary>
+		/// Called immediately after relaunching. SUUpdater delegate must be set before applicationDidFinishLaunching:
+		/// to catch this event.
+		///
+		/// @optional - (void)updaterDidRelaunchApplication:(SUUpdater *)updater;
+		/// </summary>
+		/// <param name="updater">The SUUpdater instance.</param>
+		[Export("updaterDidRelaunchApplication:")]
+		void UpdaterDidRelaunchApplication(SUUpdater updater);
+
+		/// <summary>
+		/// Returns an object that compares version numbers to determine their arithmetic relation to each other.
+		/// This method allows you to provide a custom version comparator. If you don't implement this method or
+		/// return null, the standard version comparator will be used.
+		///
+		/// @optional -(id<SUVersionComparison>)versionComparatorForUpdater:(SUUpdater *)updater;
+		/// </summary>
+		/// <param name="updater">The SUUpdater instance.</param>
+		/// <returns></returns>
+		[Export ("versionComparatorForUpdater:")]
         SUVersionComparison VersionComparatorForUpdater (SUUpdater updater);
 
-        // @optional -(id<SUVersionDisplay>)versionDisplayerForUpdater:(SUUpdater *)updater;
-        [Export ("versionDisplayerForUpdater:")]
+		/// <summary>
+		/// Returns an object that formats version numbers for display to the user.
+		/// If you don't implement this method or return null, the standard version formatter will be used
+		///
+		/// @optional -(id<SUVersionDisplay>)versionDisplayerForUpdater:(SUUpdater *)updater;
+		/// </summary>
+		/// <param name="updater">The SUUpdater instance.</param>
+		/// <returns></returns>
+		[Export ("versionDisplayerForUpdater:")]
         SUVersionDisplay VersionDisplayerForUpdater (SUUpdater updater);
 
-        // @optional -(NSString *)pathToRelaunchForUpdater:(SUUpdater *)updater;
-        [Export ("pathToRelaunchForUpdater:")]
+		/// <summary>
+		/// Returns the path which is used to relaunch the client after the update is installed.
+		/// The default is the path of the host bundle.
+		///
+		/// @optional -(NSString *)pathToRelaunchForUpdater:(SUUpdater *)updater;
+		/// </summary>
+		/// <param name="updater">The SUUpdater instance.</param>
+		/// <returns></returns>
+		[Export ("pathToRelaunchForUpdater:")]
         string PathToRelaunchForUpdater (SUUpdater updater);
 
-        // @optional -(void)updaterWillShowModalAlert:(SUUpdater *)updater;
-        [Export ("updaterWillShowModalAlert:")]
+		/// <summary>
+		/// Called before an updater shows a modal alert window, to give the host the opportunity
+		/// to hide attached windows that may get in the way.
+		///
+		/// @optional -(void)updaterWillShowModalAlert:(SUUpdater *)updater;
+		/// </summary>
+		/// <param name="updater">The SUUpdater instance.</param>
+		[Export ("updaterWillShowModalAlert:")]
         void UpdaterWillShowModalAlert (SUUpdater updater);
 
-        // @optional -(void)updaterDidShowModalAlert:(SUUpdater *)updater;
-        [Export ("updaterDidShowModalAlert:")]
+		/// <summary>
+		/// Called after an updater shows a modal alert window, to give the host the opportunity to hide
+		/// attached windows that may get in the way.
+		///
+		/// @optional -(void)updaterDidShowModalAlert:(SUUpdater *)updater;
+		/// </summary>
+		/// <param name="updater">The SUUpdater instance.</param>
+		[Export ("updaterDidShowModalAlert:")]
         void UpdaterDidShowModalAlert (SUUpdater updater);
 
-        // @optional -(void)updater:(SUUpdater *)updater willInstallUpdateOnQuit:(SUAppcastItem *)item immediateInstallationInvocation:(NSInvocation *)invocation;
-        [Export ("updater:willInstallUpdateOnQuit:immediateInstallationInvocation:")]
+		/// <summary>
+		/// Called when an update is scheduled to be silently installed on quit.
+		/// This is after an update has been automatically downloaded in the background
+		/// (i.e. SUUpdater::automaticallyDownloadsUpdates is true)
+		///
+		/// @optional -(void)updater:(SUUpdater *)updater willInstallUpdateOnQuit:(SUAppcastItem *)item immediateInstallationInvocation:(NSInvocation *)invocation;
+		/// </summary>
+		/// <param name="updater">The SUUpdater instance.</param>
+		/// <param name="item">The appcast item corresponding to the update that is proposed to be installed.</param>
+		/// <param name="invocation">Can be used to trigger an immediate silent install and relaunch.</param>
+		[Export ("updater:willInstallUpdateOnQuit:immediateInstallationInvocation:")]
         void UpdaterWillInstallUpdateOnQuit (SUUpdater updater, SUAppcastItem item, NSInvocation invocation);
 
-        // @optional -(void)updater:(SUUpdater *)updater didCancelInstallUpdateOnQuit:(SUAppcastItem *)item;
-        [Export ("updater:didCancelInstallUpdateOnQuit:")]
+		/// <summary>
+		/// Calls after an update that was scheduled to be silently installed on quit has been canceled.
+		///
+		/// @optional -(void)updater:(SUUpdater *)updater didCancelInstallUpdateOnQuit:(SUAppcastItem *)item;
+		/// </summary>
+		/// <param name="updater">The SUUpdater instance.</param>
+		/// <param name="item">The appcast item corresponding to the update that was proposed to be installed.</param>
+		[Export ("updater:didCancelInstallUpdateOnQuit:")]
         void UpdaterDidCancelInstallUpdateOnQuit (SUUpdater updater, SUAppcastItem item);
 
-        // @optional -(void)updater:(SUUpdater *)updater didAbortWithError:(NSError *)error;
-        [Export ("updater:didAbortWithError:")]
+		/// <summary>
+		/// Called after an update is aborted due to an error.
+		///
+		/// @optional -(void)updater:(SUUpdater *)updater didAbortWithError:(NSError *)error;
+		/// </summary>
+		/// <param name="updater">The SUUpdater instance.</param>
+		/// <param name="error">The error that caused the abort.</param>
+		[Export ("updater:didAbortWithError:")]
         void UpdaterDidAbortWithError (SUUpdater updater, NSError error);
     }
 
