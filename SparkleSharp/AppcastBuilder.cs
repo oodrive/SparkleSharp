@@ -26,19 +26,28 @@ namespace SparkleSharp
 
         public AppcastItemBuilder WithTitle(string title)
         {
-            _dictionary.Add(FromObject("title"), FromObject(title));
+            if (!string.IsNullOrEmpty(title))
+            {
+                _dictionary.Add(FromObject("title"), FromObject(title));
+            }
             return this;
         }
 
         public AppcastItemBuilder WithDescription(string description)
         {
-            _dictionary.Add(FromObject("description"), FromObject(description));
+            if (!string.IsNullOrEmpty(description))
+            {
+                _dictionary.Add(FromObject("description"), FromObject(description));
+            }
             return this;
         }
 
         public AppcastItemBuilder WithReleaseNoteUrl(string url)
         {
-            _dictionary.Add(FromObject("sparkle:releaseNotesLink"), FromObject(url));
+            if (!string.IsNullOrEmpty(url))
+            {
+                _dictionary.Add(FromObject("sparkle:releaseNotesLink"), FromObject(url));
+            }
             return this;
         }
 
@@ -52,13 +61,19 @@ namespace SparkleSharp
 
         public AppcastItemBuilder WithMinSystemVersion(string version)
         {
-            _dictionary.Add(FromObject("sparkle:minimumSystemVersion"), FromObject(version));
+            if (!string.IsNullOrEmpty(version))
+            {
+                _dictionary.Add(FromObject("sparkle:minimumSystemVersion"), FromObject(version));
+            }
             return this;
         }
 
         public AppcastItemBuilder WithMaxSystemVersion(string version)
         {
-            _dictionary.Add(FromObject("sparkle:minimumSystemVersion"), FromObject(version));
+            if (!string.IsNullOrEmpty(version))
+            {
+                _dictionary.Add(FromObject("sparkle:minimumSystemVersion"), FromObject(version));
+            }
             return this;
         }
 
@@ -74,20 +89,29 @@ namespace SparkleSharp
 
         public AppcastItemBuilder WithVersion(string bundleVersion, string bundleVersionShort = null)
         {
-            _enclosure.Add(FromObject("sparkle:version"), FromObject(bundleVersion));
-            _enclosure.Add(FromObject("sparkle:shortVersionString"), FromObject(bundleVersionShort ?? bundleVersion));
+            if (!string.IsNullOrEmpty(bundleVersion))
+            {
+                _enclosure.Add(FromObject("sparkle:version"), FromObject(bundleVersion));
+                _enclosure.Add(FromObject("sparkle:shortVersionString"), FromObject(bundleVersionShort ?? bundleVersion));
+            }
             return this;
         }
 
         public AppcastItemBuilder WithDownloadUrl(string url)
         {
-            _enclosure.Add(FromObject("url"), FromObject(url));
+            if (!string.IsNullOrEmpty(url))
+            {
+                _enclosure.Add(FromObject("url"), FromObject(url));
+            }
             return this;
         }
 
         public AppcastItemBuilder WithEdSignature(string signature)
         {
-            _enclosure.Add(FromObject(@"sparkle:edSignature"), FromObject(signature));
+            if (!string.IsNullOrEmpty(signature))
+            {
+                _enclosure.Add(FromObject(@"sparkle:edSignature"), FromObject(signature));
+            }
             return this;
         }
 
