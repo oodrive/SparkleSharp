@@ -14,7 +14,7 @@
     <RestoreProjectStyle>PackageReference</RestoreProjectStyle>
     <PackOnBuild>true</PackOnBuild>
     <PackageId>SparkleSharp</PackageId>
-    <PackageVersion>1.0.0-alpha4</PackageVersion>
+    <PackageVersion>1.0.0-rc2</PackageVersion>
     <Authors>oodrive</Authors>
     <Copyright>Copyright 2019</Copyright>
     <Owners>oodrive</Owners>
@@ -85,7 +85,7 @@
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="NuGet.Build.Packaging">
-      <Version>0.2.5-dev.8</Version>
+      <Version>0.2.2</Version>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
       <PrivateAssets>all</PrivateAssets>
     </PackageReference>
