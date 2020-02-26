@@ -14,7 +14,7 @@
     <RestoreProjectStyle>PackageReference</RestoreProjectStyle>
     <PackOnBuild>true</PackOnBuild>
     <PackageId>SparkleSharp</PackageId>
-    <PackageVersion>1.0.0-rc2</PackageVersion>
+    <PackageVersion>1.0.0-rc4</PackageVersion>
     <Authors>oodrive</Authors>
     <Copyright>Copyright 2019</Copyright>
     <Owners>oodrive</Owners>
